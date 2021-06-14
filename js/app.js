@@ -67,7 +67,7 @@ UI.prototype.mostrarMensaje = (mensaje, tipo) => {
         if(tipo === 'error'){
                 div.classList.add('error');
         }else{
-                div.classList.add('correct');
+                div.classList.add('correcto');
         }
 
         div.classList.add('mensaje', 'mt-10');
@@ -80,6 +80,53 @@ UI.prototype.mostrarMensaje = (mensaje, tipo) => {
         setTimeout( () => {
                 div.remove();
         }, 2000)
+}
+
+UI.prototype.mostrarResultado = (total, seguro) => {
+
+        const { marca, year, tipo } = seguro;
+
+        switch(marca){
+                case '1':
+                        textoMarca = 'Americano';
+                        break;
+                
+                case '2':
+                        textoMarca = 'Asiático';
+                        break;
+                
+                case '3':
+                        textoMarca = 'Europeo';
+                        break;
+
+                default:
+                        break;
+        }
+
+
+        // Crear el resultado
+        const div = document.createElement('div');
+        div.classList.add('mt-10');
+
+        div.innerHTML = `
+                <p class="header">Resumen</p>
+                <p class="font-bold">Total: ${textoMarca}</p>
+                <p class="font-bold">Año: ${year}</p>
+                <p class="font-bold capitalize">Tipo: ${tipo}</p>
+                <p class="font-bold">Total: ${total}</p>
+        `;
+
+        const resultadoDiv = document.querySelector('#resultado');
+
+        // Mostrar Spinner
+        const spinner = document.querySelector('#cargando');
+        spinner.style.display = 'block';
+
+        setTimeout( () => {
+                spinner.style.display = 'none';
+                resultadoDiv.appendChild(div);
+        }, 2000)
+
 }
 
 
@@ -118,10 +165,17 @@ function cotizarSeguro(e) {
 
         ui.mostrarMensaje('Cotizando', 'exito');
 
+        // Ocultar cotizaciones previas
+        const resultados = document.querySelector('#resultado div');
+        if(resultados != null){
+                resultados.remove();
+        }
+
         // Instanciar el seguro
         const seguro = new Seguro(marca, year, tipo);
-        seguro.cotizarSeguro();
+        const total = seguro.cotizarSeguro();
 
 
         // Utilizar prototype para cotizar
+        ui.mostrarResultado(total, seguro);
 }
